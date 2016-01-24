@@ -19,7 +19,7 @@ extension Imgur {
      - parameter image:    NSData of an image. This will be base64 encoded and uploaded to Imgur.
      - parameter callback: Callback with optional result and NSError
      */
-    public class func upload(image: NSData, callback: ((url: String, width: Int, height: Int)?, NSError?) -> Void) {
+    public class func upload(image: NSData, callback: ((url: String, width: Int, height: Int, type: String)?, NSError?) -> Void) {
         
         Alamofire.request(API.Upload(image))
             .responseJSON { response in
@@ -28,7 +28,7 @@ extension Imgur {
                         let json = JSON(value)
                         if let data = json["data"].dictionary {
                             
-                            var result = (url: "", width: 0, height: 0)
+                            var result = (url: "", width: 0, height: 0, type: "")
                             
                             if let url = data["link"]?.string {
                                 result.url = url
@@ -40,6 +40,10 @@ extension Imgur {
                             
                             if let height = data["height"]?.int {
                                 result.height = height
+                            }
+                            
+                            if let type = data["type"]?.string {
+                                result.type = type
                             }
                             
                             callback(result, response.result.error)
